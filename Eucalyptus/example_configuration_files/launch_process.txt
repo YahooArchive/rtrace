@@ -1,0 +1,12 @@
+## Copyright 2014, Yahoo! Inc. 
+## Copyrights licensed under the New BSD License. See the accompanying LICENSE file in the project root folder for terms.
+
+; This is how you launch a process for Eucalyptus to debug
+; 'target' keyword is used to specify the debugee
+; 'args' keyword is a string of arguments
+; 'env' keyword is key/value pair of environment vars
+
+target: /tmp/crashy
+args: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+env: BLAH=test
+env: MYLIBPATH=/usr/lib

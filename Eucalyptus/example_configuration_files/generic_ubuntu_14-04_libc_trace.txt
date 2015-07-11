@@ -1,0 +1,19 @@
+## Copyright 2015, Yahoo! Inc. 
+## Copyrights licensed under the New BSD License. See the
+## accompanying LICENSE file in the project root folder for terms.
+
+; This is how you set breakpoints within shared objects
+; You can use 'readelf -s' to get the proper address for
+; a function inside of your shared object.
+; The order of the parameters does not matter
+; This example is for Ubuntu 14.04 x64
+
+addr=0x00000000000835a0, name=malloc, lib=/lib/x86_64-linux-gnu/libc-2.19.so, bpc=5, code=scripts/glibc_malloc.rb
+addr=0x0000000000083c40, name=free, lib=/lib/x86_64-linux-gnu/libc-2.19.so, bpc=5, code=scripts/on_free.rb
+addr=0x00000000000ec710, name=read, lib=/lib/x86_64-linux-gnu/libc-2.19.so, bpc=5, code=scripts/on_breakpoint.rb
+addr=0x00000000000ec770, name=write, lib=/lib/x86_64-linux-gnu/libc-2.19.so, bpc=5, code=scripts/on_breakpoint.rb
+on_attach=scripts/on_attach.rb
+
+; gnome-calculator example
+;addr=0x0000000000444b80, name=unit_new
+;on_breakpoint=scripts/on_breakpoint.rb
