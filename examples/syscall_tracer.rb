@@ -13,8 +13,8 @@ pid = ARGV[0].to_i
 bits = 64
 
 if ARGV.size < 1 or pid == 0
-	puts "hit_tracer_example.rb <PID>"
-	exit
+  puts "hit_tracer_example.rb <PID>"
+  exit
 end
 
 ## Create an Rtrace instance
@@ -31,10 +31,10 @@ d.syscall_tracing = true
 
 ## Instruct rtrace to trace syscalls
 d.syscall_trace(Proc.new do |regs,rtrace|
-	puts "Syscall Executed"
-	rtrace.print_registers
-	puts "--------------------------------------"
-	d.syscall_tracing = false
+  puts "Syscall Executed"
+  rtrace.print_registers
+  puts "--------------------------------------"
+  d.syscall_tracing = false
 end)
 
 puts "Continuing Process"

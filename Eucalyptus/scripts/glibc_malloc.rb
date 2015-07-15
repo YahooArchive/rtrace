@@ -1,4 +1,4 @@
-## Copyright 2015, Yahoo! Inc. 
+## Copyright 2015, Yahoo! Inc.
 ## Copyrights licensed under the New BSD License. See the
 ## accompanying LICENSE file in the project root folder for terms.
 
@@ -19,12 +19,12 @@ size = regs.rdi if @rtrace.bits == 64
 locs = @rtrace.search_heap(0x41414141).flatten
 
 if !locs.empty?
-  	log.str "0x41414141 found at:"
-	locs.map do |l|
-	  l.map do |i|
-	    log.str " -> #{i.to_s(16)} #{@rtrace.get_mapping_name(i)}"
-	  end
-	end
+  log.str "0x41414141 found at:"
+  locs.map do |l|
+    l.map do |i|
+      log.str " -> #{i.to_s(16)} #{@rtrace.get_mapping_name(i)}"
+    end
+  end
 end
 
 stack = @rtrace.get_stack_range

@@ -1,4 +1,4 @@
-## Copyright 2015, Yahoo! Inc. 
+## Copyright 2015, Yahoo! Inc.
 ## Copyrights licensed under the New BSD License. See the
 ## accompanying LICENSE file in the project root folder for terms.
 
@@ -6,12 +6,12 @@
 ## reimplementation which uses the Rtrace debugging library.
 ##
 ## Usage:
-## 
+##
 ## Catch a debug event like segfault or illegal instruction
 ## then pass your rtrace instance to this class:
 ##
 ## Crash.new(@rtrace).exploitable?
-## 
+##
 ## Thats it! The class will use your rtrace instance to
 ## determine the state of the process. This is done examining
 ## the last signal or debug event the process received and
@@ -95,5 +95,5 @@ class Crash
                 puts "NULL Pointer dereference - NOT EXPLOITABLE (unless you control the offset from NULL)"
                 return NOT_EXPLOITABLE
         end
-    end 
+    end
 end

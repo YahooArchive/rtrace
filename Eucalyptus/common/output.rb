@@ -1,4 +1,4 @@
-## Copyright 2014, Yahoo! Inc. 
+## Copyright 2014, Yahoo! Inc.
 ## Copyrights licensed under the New BSD License. See the accompanying LICENSE file in the project root folder for terms.
 
 class EucalyptusLog
