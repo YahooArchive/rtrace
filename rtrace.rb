@@ -3,6 +3,4 @@
 ## accompanying LICENSE file in the project root folder for terms.
 
 require 'ffi'
-require 'lib/constants'
-require 'lib/utils'
 require 'lib/rtrace'
