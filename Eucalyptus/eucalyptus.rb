@@ -381,14 +381,14 @@ class EucalyptusImpl < Rtrace
 end
 
 EUCALYPTUS_OPTS = {
-	:pid => nil,
-	:bits => 64,
-	:ep_file => nil,
-	:bp_file => nil,
-	:dsl_file => nil,
-	:out => STDOUT,
-	:fork => false,
-	:kill => false
+	pid: nil,
+	bits: 64,
+	ep_file: nil,
+	bp_file: nil,
+	dsl_file: nil,
+	out: STDOUT,
+	fork: false,
+	kill: false
 }
 
 opts = OptionParser.new do |opts|

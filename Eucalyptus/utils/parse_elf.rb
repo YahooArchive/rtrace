@@ -15,7 +15,7 @@ require 'bindata'
 ## Basic ELF Header
 class ELF32Header < BinData::Record
 	endian :little
-	string :e_ident, :read_length => 16
+	string :e_ident, read_length: 16
 	uint16 :e_type
 	uint16 :e_machine 
 	uint32 :e_version 
@@ -85,7 +85,7 @@ end
 ## Basic ELF Header
 class ELF64Header < BinData::Record
 	endian :little
-	string :e_ident, :read_length => 16
+	string :e_ident, read_length: 16
 	uint16 :e_type
 	uint16 :e_machine
 	uint32 :e_version
