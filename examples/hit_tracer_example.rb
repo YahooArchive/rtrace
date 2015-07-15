@@ -14,8 +14,8 @@ pid = ARGV[0].to_i
 bits = ARGV[1].to_i
 
 if ARGV.size < 1 or pid == 0
-	puts "hit_tracer_example.rb <PID>"
-	exit
+  puts "hit_tracer_example.rb <PID>"
+  exit
 end
 
 ## Create an Rtrace instance
@@ -30,16 +30,16 @@ d.attach
 
 ## Create a block to run when our breakpoint is hit
 f = Proc.new do |regs,rtrace|
-	puts "Breakpoint Hit!"
-	rtrace.print_registers
-	puts "--------------------"
+  puts "Breakpoint Hit!"
+  rtrace.print_registers
+  puts "--------------------"
 end
 
 ## Set the breakpoint
 if d.bits == 64
-	d.breakpoint_set(0x00000000004005bd, "foo", f)
+  d.breakpoint_set(0x00000000004005bd, "foo", f)
 else
-	d.breakpoint_set(0x0804847d, "foo", f)
+  d.breakpoint_set(0x0804847d, "foo", f)
 end
 
 ## Install all breakpoints
