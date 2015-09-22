@@ -39,6 +39,8 @@ class Eucalyptus
 		@so = {}
 		@out = opts[:out]
 		@log = EucalyptusLog.new(@out)
+		@pid_stdin = nil
+		@pid_stdout = nil
 
 		## Parse Eucalyptus execute file
 		parse_exec_proc(opts[:ep_file]) if opts[:ep_file]
@@ -101,7 +103,7 @@ class Eucalyptus
 
 		@rtrace.install_bps
 
-		log.str "#{bp_count} Breakpoint(s) installed ..."
+		log.str "#{bp_count} Breakpoint(s) installed ..." if bp_count > 0
 
 		o = 0
 		o |= Ptrace::SetOptions::TRACEFORK if opts[:fork] == true
@@ -119,7 +121,10 @@ class Eucalyptus
 			exit
 		end
 
-		@pid_stdout.close
+		## You probably want to save this somewhere.
+		## Leave it commented if you're just hacking
+		## on Eucalyptus
+		#@pid_stdout.close if @pid_stdout != nil
 
 		## Not catching exceptions here will
 		## help catch bugs in Rtrace :)
