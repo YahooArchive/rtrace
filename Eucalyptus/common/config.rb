@@ -37,7 +37,7 @@ class Eucalyptus
 		hdlrs = %w[ on_attach on_detach on_single_step on_syscall_continue on_continue on_exit 
 					on_signal on_sigint on_segv on_illegal_instruction on_sigtrap on_fork_child
 					on_sigchild on_sigterm on_sigstop on_iot_trap on_stop on_execve on_vfork_done
-					on_seccomp on_kill on_abort on_sigbus unhandled_signal on_syscall ]
+					on_seccomp on_kill on_abort on_sigbus unhandled_signal on_syscall on_clone ]
 
 		if hdlrs.include?(event) == false
 			puts "event_handler: I don't support event #{event}"

@@ -844,68 +844,70 @@ class Rtrace
 			when Signal::SIGTRAP
 				event_code = (status >> 8) 
 				try_method :on_sigtrap
-				r = self.get_registers
-				ip = get_ip(r)
+				regs = self.get_registers
+				ip = get_ip(regs)
 				ip -= 1
 
 				## Let user defined breakpoint handlers run
 				try_method :on_breakpoint if @breakpoints.has_key?(ip)
 
 				case event_code
-				  ## TODO: should work the same way as CLONE
-				  when Ptrace::EventCodes::VFORK, Ptrace::EventCodes::FORK
-					p = FFI::MemoryPointer.new(:int, 1)
-					native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, p.to_i)
-					## Fix up the PID in each breakpoint
-					if (1..65535) === p.get_int32(0)
-						@breakpoints.each_pair do |k,v|
-							v.each do |b|
-								b.bppid = p[:pid]
+				  	## TODO: should work the same way as CLONE
+				  	when Ptrace::EventCodes::VFORK, Ptrace::EventCodes::FORK
+						p = FFI::MemoryPointer.new(:int, 1)
+						native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, p.to_i)
+						## Fix up the PID in each breakpoint
+						if (1..65535) === p.get_int32(0)
+							@breakpoints.each_pair do |k,v|
+								v.each do |b|
+									b.bppid = p.get_int32(0).to_i
+								end
 							end
+
+							## detach will handle calling uninstall_bps
+							self.detach
+
+							ppid = @pid = p.get_int32(0).to_i
+							try_method :on_fork_child, @pid
 						end
 
-						## detach will handle calling uninstall_bps
-						self.detach
+				  	when Ptrace::EventCodes::CLONE
+						## Get the new TID
+						tid = FFI::MemoryPointer.new(:int, 1)
+						native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, tid.to_i)
+						tid = tid.get_int32(0).to_i
+						@tids.push(tid)
 
-						@pid = p[:pid]
-						try_method :on_fork_child, @pid
-					end
+						try_method :on_clone, tid
 
-				  when Ptrace::EventCodes::CLONE
-					## Get the new TID
-					tid = FFI::MemoryPointer.new(:int, 1)
-					native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, tid.to_i)
-					tid = tid.get_int32(0).to_i
-					@tids.push(tid)
+						## Tell the new TID to continue. We are automatically already
+						## tracing it. This is totally ghetto but ptrace might
+						## fail here so we need to call waitpid and try again...
+						begin
+						  native.ptrace(Ptrace::CONTINUE, tid, 0, 0)
+						rescue SystemCallError => e
+						  Process.waitpid2(tid, (Wait::WALL|Wait::NOHANG))
+						  native.ptrace(Ptrace::CONTINUE, tid, 0, 0)
+						end
 
-					## Tell the new TID to continue. We are automatically already
-					## tracing it. This is totally ghetto but ptrace might
-					## fail here so we need to call waitpid and try again...
-					begin
-					  r = native.ptrace(Ptrace::CONTINUE, tid, 0, 0)
-					rescue SystemCallError => e
-					  r = Process.waitpid2(tid, (Wait::WALL|Wait::NOHANG))
-					  r = native.ptrace(Ptrace::CONTINUE, tid, 0, 0)
-					end
+				  	when Ptrace::EventCodes::EXEC
+					  	try_method :on_execve
 
-				  when Ptrace::EventCodes::EXEC
-					  try_method :on_execve
+				  	when Ptrace::EventCodes::VFORK_DONE
+					  	try_method :on_vfork_done
 
-				  when Ptrace::EventCodes::VFORK_DONE
-					  try_method :on_vfork_done
+				  	when Ptrace::EventCodes::EXIT
+						@exited = true if r == @pid
+						p = FFI::MemoryPointer.new(:int, 1)
+						native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, p.to_i)
+						@exited = true if r == @pid
+						try_method :on_exit, p.get_int32(0), r
+						@tids.delete(r)
+						## This is the main PID dieing
+						#exit if r == @pid
 
-				  when Ptrace::EventCodes::EXIT
-					@exited = true if r == @pid
-					p = FFI::MemoryPointer.new(:int, 1)
-					native.ptrace(Ptrace::GETEVENTMSG, @pid, 0, p.to_i)
-					@exited = true if r == @pid
-					try_method :on_exit, p.get_int32(0), r
-					@tids.delete(r)
-					## This is the main PID dieing
-					#exit if r == @pid
-
-				  when Ptrace::EventCodes::SECCOMP
-					  try_method :on_seccomp
+				  	when Ptrace::EventCodes::SECCOMP
+					  	try_method :on_seccomp
 				end
 
 				## We either handled our breakpoint
@@ -997,6 +999,7 @@ class Rtrace
 	def on_illegal_instruction() end
 	def on_sigtrap()             end
 	def on_fork_child(pid)       end
+	def on_clone(tid)            end
 	def on_sigchild()            end
 	def on_sigterm()             end
 	def on_sigstop()             end

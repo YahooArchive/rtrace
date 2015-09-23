@@ -105,10 +105,15 @@ class Eucalyptus
 
 		log.str "#{bp_count} Breakpoint(s) installed ..." if bp_count > 0
 
+		## TODO: This should be more configurable
 		o = 0
 		o |= Ptrace::SetOptions::TRACEFORK if opts[:fork] == true
+		o |= Ptrace::SetOptions::TRACEVFORK if opts[:fork] == true
+		o |= Ptrace::SetOptions::TRACEVFORKDONE
 		o |= Ptrace::SetOptions::TRACECLONE
 		o |= Ptrace::SetOptions::TRACEEXIT
+		o |= Ptrace::SetOptions::TRACEEXEC
+
 		@rtrace.set_options(o) if o != 0
 
 		@rtrace.continue
@@ -252,6 +257,12 @@ class EucalyptusImpl < Rtrace
 		@pid = pid
 		exec_eh_script("on_fork_child")
 		log.str "Parent process forked a child with pid #{pid}"
+		super
+	end
+
+	def on_clone(tid)
+		exec_eh_script("on_clone")
+		log.str "New thread created with tid #{tid}"
 		super
 	end
 

@@ -125,6 +125,7 @@ Eucalyptus 1.0 | Yahoo 2014/2015
 	Keywords for configuration files:
 
 	on_fork_child
+	on_clone
 	on_sigchild
 	on_sigterm
 	on_segv

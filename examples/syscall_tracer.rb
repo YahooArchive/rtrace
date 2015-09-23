@@ -13,7 +13,7 @@ pid = ARGV[0].to_i
 bits = 64
 
 if ARGV.size < 1 or pid == 0
-	puts "hit_tracer_example.rb <PID>"
+	puts "syscall_tracer_example.rb <PID>"
 	exit
 end
 
