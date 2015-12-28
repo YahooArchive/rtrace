@@ -275,8 +275,9 @@ end
 ## Eucalyptus tool for how to use this class
 class Rtrace
 	attr_reader :status, :exited, :signal
-	attr_accessor :breakpoints, :mapped_regions, :process, :use_ptrace_for_search, 
-				  :bits, :native, :syscall_tracing, :syscall_block, :pid, :tids
+	attr_accessor :breakpoints, :memory_map, :process, :use_ptrace_for_search, 
+				  :bits, :native, :syscall_tracing, :syscall_block, :pid, :tids,
+				  :smap
 
 	## Each breakpoint is represented by one of these class instances. 
 	class Breakpoint
@@ -340,7 +341,8 @@ class Rtrace
 		@exited = false
 		@tids = []
 
-		@mapped_regions = Hash.new
+		@memory_map = Hash.new
+		@smap = Hash.new
 		@breakpoints = Hash.new
 		@native = Native.new
 	end
@@ -461,22 +463,56 @@ class Rtrace
 		a
 	end
 
+	## Parse smaps and return a hash of its content
+	## key = Start address of region
+	## value = An array of hashes for each member
+	## The fields might vary by kernel version so
+	## we have to do some dirty work to find out
+	## how many members there are for each mapping
+	def smaps
+		@smap.clear if @smaps
+		y = []
+		File.open("/proc/#{pid}/smaps").to_a.each_with_index do |p,i|
+			y.push(i) if p[0] =~ /[0-9]/
+			break if y.size == 2
+		end
+		sz = y[1] - y[0]
+		File.open("/proc/#{pid}/smaps").to_a.each_slice(sz) do |s|
+			addr = s[0].split('-').first
+			h = {}
+			s.each_with_index do |p,i|
+				if i == 0
+					k = "Mapping"
+					v = p
+				else
+					k,v = p.split(':')
+				end
+				h.store(k, v)
+			end
+			@smap.store(addr, h)
+		end
+		@smap
+	end
+
 	# This method returns a hash of mapped regions
-	# The hash is also stored as @mapped_regions
+	# The hash is also stored as @map
 	# key = Start address of region
 	# value = Size of the region
-	def mapped
-		@mapped_regions.clear if @mapped_regions
+	def maps
+		@memory_map.clear if @memory_map
 		File.open("/proc/#{pid}/maps") do |f|
 			f.each_line do |l|
 				e = l.split(' ',2).first
-				s,e = e.split('-').map{|x| x.to_i(16)}
+				s,e = e.split('-').map {|x| x.to_i(16)}
 				sz = e - s
-				@mapped_regions.store(s, sz)
+				@memory_map.store(s, sz)
 			end
 		end
-		@mapped_regions
+		@memory_map
 	end
+
+	alias :mapped_regions, :memory_map
+	alias_method :mapped, :maps
 
 	## Return a name for a range if possible. greedy match
 	## returns the first found
@@ -660,7 +696,7 @@ class Rtrace
 	def search_process(val, &block)
 		loc = []
 		self.mapped
-		@mapped_regions.each_pair do |k,v|
+		@memory_map.each_pair do |k,v|
 			next if k == 0 or v == 0
 			max = k+v
 			loc << search_page(k, max, val, &block)
