@@ -511,7 +511,7 @@ class Rtrace
 		@memory_map
 	end
 
-	alias :mapped_regions, :memory_map
+	alias :mapped_regions :memory_map
 	alias_method :mapped, :maps
 
 	## Return a name for a range if possible. greedy match
