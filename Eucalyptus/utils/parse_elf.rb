@@ -1,3 +1,7 @@
+## Copyright 2015,2016, Yahoo! Inc.
+## Copyrights licensed under the New BSD License. See the
+## accompanying LICENSE file in the project root folder for terms.
+
 ## Optional ELF parser for Rtrace/Eucalyptus
 ## Support (and testing) for x86, x86_64 and ARM
 ## This is *NOT* a robust ELF parser. It was

@@ -1,4 +1,4 @@
-## Copyright 2015, Yahoo! Inc. 
+## Copyright 2015,2016, Yahoo! Inc.
 ## Copyrights licensed under the New BSD License. See the accompanying LICENSE file in the project root folder for terms.
 
 ## This is an example of using the Eucalyptus
