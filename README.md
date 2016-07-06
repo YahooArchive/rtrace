@@ -1,4 +1,4 @@
-Copyright 2015, Yahoo! Inc. 
+Copyright 2015,2016, Yahoo! Inc.
 Copyrights licensed under the New BSD License. See the accompanying LICENSE file in the project root folder for terms.
 
 # What is it?
@@ -7,9 +7,9 @@ Disclaimer: THIS IS BETA CODE
 
 Ruby code (with zero dependencies) for debugging native x86/x86_64 bit Linux binaries using the ptrace API. ARM support is planned but not yet finished.
 
-Rtrace ships with Eucalyptus. A fully functional scriptable debugger that doubles as a unit test for Rtrace. Eucalyptus is scriptable and extendable, its not just a test harness. It ships with real world examples that work out of the box.
+Rtrace ships with Eucalyptus. A fully functional scriptable debugger that doubles as a unit test for Rtrace. Eucalyptus is scriptable and extendable, its not just a test harness. It ships with real world examples that work out of the box. It also includes some simple utilities for parsing ELF binaries.
 
-When I said "no dependencies" I really meant it. Not a single third-party gem is required to use rtrace or Eucalyptus out of the box.
+The only dependency Rtrace has is FFI which can be easily installed with Ruby gems. FFI is maintained, supported, and incredibly powerful.
 
 Rtrace contains an optional ELF parser that requires the bindata gem. The parser supports 32/64bit ELF objects but it has not been well tested. I welcome pull requests that improve its stability.
 

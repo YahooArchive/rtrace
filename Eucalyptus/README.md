@@ -1,4 +1,4 @@
-Copyright 2014, Yahoo! Inc. 
+Copyright 2014,2015,2016 Yahoo! Inc.
 Copyrights licensed under the New BSD License. See the
 accompanying LICENSE file in the project root folder for terms.
 
@@ -28,11 +28,11 @@ accompanying LICENSE file in the project root folder for terms.
 	Eucalyptus is supported and has been tested on the following platforms:
 
 	Intel x86, x86_64
+	Ubuntu 15+ / RHEL 6
+	Ruby 2.3+
 
-	Ubuntu 14 / RHEL 6
-
-	Ruby 1.9.x
-	Ruby 2.x
+	Rtrace was originally written to work on Ruby 1.9 and 2.x. It may still work on Ruby 1.9
+	with only minor tweaks but I no longer have interest in supporting older releases.
 
 ## Features
 
@@ -54,7 +54,7 @@ accompanying LICENSE file in the project root folder for terms.
 
 $ ruby eucalyptus.rb -h
 
-Eucalyptus 1.0 | Yahoo 2014/2015
+Eucalyptus 1.0 | Yahoo 2014-2016
 
     -p, --pid PID/Name         Attach to this pid OR process name (ex: -p 12345 | -p gcalctool)
     -i, --bits 32/64           Is the target process 32 or 64 bit?
