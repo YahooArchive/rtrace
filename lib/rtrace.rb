@@ -7,6 +7,8 @@ RTRACE_VERSION = "1.4"
 ## This ugly code is from the Ragweed project. It is
 ## required to support struct style access of FFI fields
 module FFIStructInclude
+	## Ruby 1.9 no longer supported but this will remain
+	## for a few versions just in case anyone is using it
 	if RUBY_VERSION < "1.9"
 		def methods regular=true
 			(super + self.members.map{|x| [x.to_s, x.to_s+"="]}).flatten
