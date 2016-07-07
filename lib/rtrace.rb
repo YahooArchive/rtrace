@@ -473,13 +473,10 @@ class Rtrace
 	## how many members there are for each mapping
 	def smaps
 		@smap.clear if @smaps
-		y = []
-		File.open("/proc/#{pid}/smaps").to_a.each_with_index do |p,i|
-			y.push(i) if p[0] =~ /[0-9]/
-			break if y.size == 2
-		end
-		sz = y[1] - y[0]
-		File.open("/proc/#{pid}/smaps").to_a.each_slice(sz) do |s|
+		sm = File.read("/proc/#{pid}/smaps")
+		return if sm.size == 0
+		sz = sm.each_line.count / sm.scan(/[0-9a-f]{8,16}\-[0-9a-f]{8,16}/).count
+		sm.each_line.to_a.each_slice(sz) do |s|
 			addr = s[0].split('-').first
 			h = {}
 			s.each_with_index do |p,i|
@@ -489,11 +486,20 @@ class Rtrace
 				else
 					k,v = p.split(':')
 				end
-				h.store(k, v)
+				h.store(k, v.chomp.strip)
 			end
-			@smap.store(addr, h)
+			@smap.store(addr.to_i(16), h)
 		end
-		@smap
+	end
+
+	def smap_for_address(addr, r=false)
+		smaps if r == true
+		addr = addr.to_i(16) if addr.kind_of?(String)
+		@smap.each_pair do |k,v|
+			base_addr, end_addr = v["Mapping"].split(/[\-\s+]/)
+			return @smap[k] if addr >= base_addr.to_i(16) and addr <= end_addr.to_i(16)
+		end
+		return nil
 	end
 
 	# This method returns a hash of mapped regions
